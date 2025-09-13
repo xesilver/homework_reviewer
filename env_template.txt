@@ -1,0 +1,16 @@
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4
+
+# Application Settings
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+
+# File Paths
+HOMEWORK_DIR=homework
+RESULTS_DIR=results
+
+# Review Settings
+MAX_CONCURRENT_REVIEWS=5
+REVIEW_TIMEOUT=300
