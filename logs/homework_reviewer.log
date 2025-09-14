@@ -340,3 +340,17 @@ For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/er
 2025-09-14 15:50:39,981 - homework_reviewer - INFO - review_agent.py:299 - Results saved for Ivanov
 2025-09-14 15:50:39,989 - homework_reviewer - INFO - review.py:80 - Completed review for Ivanov in 46.85s
 2025-09-14 15:52:50,036 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:58:23,066 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:58:23,067 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:58:57,676 - homework_reviewer - INFO - review.py:55 - Starting review for student Petrov, lecture 1
+2025-09-14 15:59:01,267 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Petrov
+2025-09-14 15:59:01,281 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Petrov
+2025-09-14 15:59:01,304 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Petrov
+2025-09-14 15:59:23,030 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:00:02,982 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:00:02,992 - homework_reviewer - INFO - review_agent.py:224 - Code review completed for Petrov
+2025-09-14 16:00:03,002 - homework_reviewer - INFO - review_agent.py:281 - Score calculation completed for Petrov
+2025-09-14 16:00:03,144 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 16:00:03,145 - homework_reviewer - INFO - review_agent.py:299 - Results saved for Petrov
+2025-09-14 16:00:03,151 - homework_reviewer - INFO - review.py:80 - Completed review for Petrov in 61.89s
+2025-09-14 16:05:11,931 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
