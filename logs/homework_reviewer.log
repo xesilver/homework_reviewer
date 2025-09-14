@@ -309,3 +309,34 @@ For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/er
 2025-09-14 15:33:26,019 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
 2025-09-14 15:33:26,020 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
 2025-09-14 15:33:37,608 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:36:43,768 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:36:43,769 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:37:05,760 - homework_reviewer - INFO - review.py:55 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:37:08,534 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Ivanov
+2025-09-14 15:37:08,538 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Ivanov
+2025-09-14 15:37:08,548 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Ivanov
+2025-09-14 15:37:31,699 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:37:49,823 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:37:49,843 - homework_reviewer - INFO - review_agent.py:224 - Code review completed for Ivanov
+2025-09-14 15:37:49,854 - homework_reviewer - INFO - review_agent.py:281 - Score calculation completed for Ivanov
+2025-09-14 15:37:50,043 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 15:37:50,045 - homework_reviewer - INFO - review_agent.py:299 - Results saved for Ivanov
+2025-09-14 15:37:50,049 - homework_reviewer - INFO - review.py:80 - Completed review for Ivanov in 41.52s
+2025-09-14 15:49:24,743 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:49:28,799 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:49:28,800 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:49:45,166 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:49:48,402 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:49:48,402 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:49:51,919 - homework_reviewer - INFO - review.py:55 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:49:53,145 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Ivanov
+2025-09-14 15:49:53,152 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Ivanov
+2025-09-14 15:49:53,160 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Ivanov
+2025-09-14 15:50:18,948 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:50:39,642 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:50:39,660 - homework_reviewer - INFO - review_agent.py:224 - Code review completed for Ivanov
+2025-09-14 15:50:39,676 - homework_reviewer - INFO - review_agent.py:281 - Score calculation completed for Ivanov
+2025-09-14 15:50:39,979 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 15:50:39,981 - homework_reviewer - INFO - review_agent.py:299 - Results saved for Ivanov
+2025-09-14 15:50:39,989 - homework_reviewer - INFO - review.py:80 - Completed review for Ivanov in 46.85s
+2025-09-14 15:52:50,036 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...

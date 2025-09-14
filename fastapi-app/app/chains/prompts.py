@@ -4,6 +4,7 @@ LangChain prompt templates for homework review.
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseOutputParser
 from pydantic import BaseModel, Field
+import re
 
 
 class ReviewCriteria(BaseModel):
@@ -21,54 +22,24 @@ class ReviewOutputParser(BaseOutputParser[ReviewCriteria]):
     
     def parse(self, text: str) -> ReviewCriteria:
         """Parse the review output into structured format."""
-        # This is a simplified parser - in practice, you'd want more robust parsing
-        lines = text.strip().split('\n')
         
-        # Extract scores (simplified approach)
-        technical_correctness = 80  # Default values
-        code_style = 80
-        documentation = 80
-        performance = 80
-        overall_score = 80
-        comments = "Review completed"
+        # Use regex to find scores, ignoring case and leading/trailing whitespace
+        technical_correctness_match = re.search(r"Technical Correctness:\s*(\d+)", text, re.IGNORECASE)
+        code_style_match = re.search(r"Code Style:\s*(\d+)", text, re.IGNORECASE)
+        documentation_match = re.search(r"Documentation:\s*(\d+)", text, re.IGNORECASE)
+        performance_match = re.search(r"Performance:\s*(\d+)", text, re.IGNORECASE)
+        overall_score_match = re.search(r"Overall Score:\s*(\d+)", text, re.IGNORECASE)
         
-        # Try to extract scores from text
-        for line in lines:
-            if "technical" in line.lower() and ":" in line:
-                try:
-                    technical_correctness = int(line.split(":")[-1].strip())
-                except:
-                    pass
-            elif "style" in line.lower() and ":" in line:
-                try:
-                    code_style = int(line.split(":")[-1].strip())
-                except:
-                    pass
-            elif "documentation" in line.lower() and ":" in line:
-                try:
-                    documentation = int(line.split(":")[-1].strip())
-                except:
-                    pass
-            elif "performance" in line.lower() and ":" in line:
-                try:
-                    performance = int(line.split(":")[-1].strip())
-                except:
-                    pass
-            elif "overall" in line.lower() and ":" in line:
-                try:
-                    overall_score = int(line.split(":")[-1].strip())
-                except:
-                    pass
+        # Extract scores, with a default of 0 if not found
+        technical_correctness = int(technical_correctness_match.group(1)) if technical_correctness_match else 0
+        code_style = int(code_style_match.group(1)) if code_style_match else 0
+        documentation = int(documentation_match.group(1)) if documentation_match else 0
+        performance = int(performance_match.group(1)) if performance_match else 0
+        overall_score = int(overall_score_match.group(1)) if overall_score_match else 0
         
-        # Extract comments (everything after "Comments:" or similar)
-        comment_start = -1
-        for i, line in enumerate(lines):
-            if "comment" in line.lower() and ":" in line:
-                comment_start = i
-                break
-        
-        if comment_start >= 0:
-            comments = "\n".join(lines[comment_start:]).split(":", 1)[-1].strip()
+        # Extract comments
+        comments_match = re.search(r"Comments:\s*(.*)", text, re.IGNORECASE | re.DOTALL)
+        comments = comments_match.group(1).strip() if comments_match else "No comments provided."
         
         return ReviewCriteria(
             technical_correctness=technical_correctness,

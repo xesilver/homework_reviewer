@@ -3,6 +3,7 @@ LangChain chains for homework review workflow.
 """
 from typing import Dict, List, Any, Optional
 from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
 
 from ..core import logger, settings
 from ..services import CodeAnalysisService, RepositoryService
@@ -30,11 +31,11 @@ class ReviewChain:
         self.output_parser = ReviewOutputParser()
         
         # Create chains
-        self.review_chain = review_prompt | self.llm | self.output_parser
+        self.review_chain = review_prompt | self.llm | StrOutputParser() | self.output_parser
         
-        self.quick_review_chain = quick_review_prompt | self.llm
+        self.quick_review_chain = quick_review_prompt | self.llm | StrOutputParser()
         
-        self.code_analysis_chain = code_analysis_prompt | self.llm
+        self.code_analysis_chain = code_analysis_prompt | self.llm | StrOutputParser()
     
     def review_student_task(
         self, 
@@ -80,13 +81,7 @@ class ReviewChain:
             }
             
             # Run review chain
-            result = self.review_chain.invoke(chain_input)
-            
-            # Parse result
-            if isinstance(result, dict):
-                review_result = result
-            else:
-                review_result = self.output_parser.parse(str(result))
+            review_result = self.review_chain.invoke(chain_input)
             
             return {
                 "task": task,
@@ -210,7 +205,7 @@ class BatchReviewChain:
             temperature=0.1
         )
         self.repo_service = RepositoryService()
-        self.batch_review_chain = batch_review_prompt | self.llm
+        self.batch_review_chain = batch_review_prompt | self.llm | StrOutputParser()
     
     def review_lecture_task(
         self, 
@@ -307,7 +302,7 @@ class LectureSummaryChain:
             model_name=settings.openai_model,
             temperature=0.1
         )
-        self.summary_chain = lecture_summary_prompt | self.llm
+        self.summary_chain = lecture_summary_prompt | self.llm | StrOutputParser()
     
     def generate_lecture_summary(
         self, 
