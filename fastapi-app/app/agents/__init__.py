@@ -1,7 +1,7 @@
 """
 Agents module initialization.
 """
-from .simple_review_agent import SimpleReviewAgent as HomeworkReviewAgent, SimpleLectureReviewAgent as LectureReviewAgent
+from .review_agent import HomeworkReviewAgent, LectureReviewAgent
 
 __all__ = [
     "HomeworkReviewAgent",

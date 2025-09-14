@@ -2,64 +2,60 @@
 LangGraph agents and workflow definitions for homework review.
 """
 from typing import Dict, List, Any, Optional, TypedDict, Annotated
-from datetime import datetime
-import asyncio
 
 from langgraph.graph import StateGraph, END
-from langgraph.prebuilt import ToolNode
-from langchain_openai import OpenAI
-from langchain.schema import BaseMessage, HumanMessage, AIMessage
+from langchain_openai import ChatOpenAI
 
 from ..core import logger, settings
 from ..models.schemas import ReviewResponse, TaskReview
 from ..services import RepositoryService, ExcelService
-from ..chains import ReviewChain, BatchReviewChain, LectureSummaryChain, get_review_tools
+from ..chains.review_chains import ReviewChain, BatchReviewChain, LectureSummaryChain
 
 
 class ReviewState(TypedDict):
     """State for the review workflow."""
     # Input parameters
-    student_surname: str
-    lecture_number: int
-    task: Optional[str]
+    student_surname: Annotated[str, lambda x, y: y]
+    lecture_number: Annotated[int, lambda x, y: y]
+    task: Annotated[Optional[str], lambda x, y: y]
     
     # Workflow state
-    current_step: str
-    error_message: Optional[str]
+    current_step: Annotated[str, lambda x, y: y]
+    error_message: Annotated[Optional[str], lambda x, y: y]
     
     # Data
-    code_content: Dict[str, str]
-    code_metrics: Dict[str, Any]
-    review_result: Optional[Dict[str, Any]]
+    code_content: Annotated[Dict[str, str], lambda x, y: y]
+    code_metrics: Annotated[Dict[str, Any], lambda x, y: y]
+    review_result: Annotated[Optional[Dict[str, Any]], lambda x, y: y]
     
     # Output
-    final_response: Optional[ReviewResponse]
+    final_response: Annotated[Optional[ReviewResponse], lambda x, y: y]
 
 
 class LectureReviewState(TypedDict):
     """State for lecture-wide review workflow."""
     # Input parameters
-    lecture_number: int
-    students: Optional[List[str]]
+    lecture_number: Annotated[int, lambda x, y: y]
+    students: Annotated[Optional[List[str]], lambda x, y: y]
     
     # Workflow state
-    current_step: str
-    error_message: Optional[str]
-    progress: float
+    current_step: Annotated[str, lambda x, y: y]
+    error_message: Annotated[Optional[str], lambda x, y: y]
+    progress: Annotated[float, lambda x, y: y]
     
     # Data
-    tasks: List[str]
-    student_results: List[Dict[str, Any]]
+    tasks: Annotated[List[str], lambda x, y: y]
+    student_results: Annotated[List[Dict[str, Any]], lambda x, y: y]
     
     # Output
-    final_response: Optional[Dict[str, Any]]
+    final_response: Annotated[Optional[Dict[str, Any]], lambda x, y: y]
 
 
 class HomeworkReviewAgent:
     """Main agent for homework review workflow."""
     
     def __init__(self):
-        self.llm = OpenAI(
+        self.llm = ChatOpenAI(
             openai_api_key=settings.openai_api_key,
             model_name=settings.openai_model,
             temperature=0.1
@@ -84,22 +80,32 @@ class HomeworkReviewAgent:
         workflow.add_node("save_results", self._save_results)
         workflow.add_node("handle_error", self._handle_error)
         
-        # Add edges
+        # Set entry point
         workflow.set_entry_point("validate_input")
         
-        workflow.add_edge("validate_input", "get_code")
-        workflow.add_edge("get_code", "analyze_code")
-        workflow.add_edge("analyze_code", "review_code")
-        workflow.add_edge("review_code", "calculate_score")
-        workflow.add_edge("calculate_score", "save_results")
-        workflow.add_edge("save_results", END)
+        # Add conditional edges
+        workflow.add_conditional_edges(
+            "validate_input",
+            lambda state: "handle_error" if state.get("error_message") else "get_code",
+        )
+        workflow.add_conditional_edges(
+            "get_code",
+            lambda state: "handle_error" if state.get("error_message") else "analyze_code",
+        )
+        workflow.add_conditional_edges(
+            "analyze_code",
+            lambda state: "handle_error" if state.get("error_message") else "review_code",
+        )
+        workflow.add_conditional_edges(
+            "review_code",
+            lambda state: "handle_error" if state.get("error_message") else "calculate_score",
+        )
+        workflow.add_conditional_edges(
+            "calculate_score",
+            lambda state: "handle_error" if state.get("error_message") else "save_results",
+        )
         
-        # Error handling
-        workflow.add_edge("validate_input", "handle_error")
-        workflow.add_edge("get_code", "handle_error")
-        workflow.add_edge("analyze_code", "handle_error")
-        workflow.add_edge("review_code", "handle_error")
-        workflow.add_edge("calculate_score", "handle_error")
+        workflow.add_edge("save_results", END)
         workflow.add_edge("handle_error", END)
         
         return workflow.compile()
@@ -362,7 +368,7 @@ class LectureReviewAgent:
     """Agent for reviewing entire lectures."""
     
     def __init__(self):
-        self.llm = OpenAI(
+        self.llm = ChatOpenAI(
             openai_api_key=settings.openai_api_key,
             model_name=settings.openai_model,
             temperature=0.1
@@ -391,19 +397,27 @@ class LectureReviewAgent:
         # Add edges
         workflow.set_entry_point("validate_input")
         
-        workflow.add_edge("validate_input", "get_students")
-        workflow.add_edge("get_students", "get_tasks")
-        workflow.add_edge("get_tasks", "review_students")
-        workflow.add_edge("review_students", "generate_summary")
-        workflow.add_edge("generate_summary", "save_results")
+        workflow.add_conditional_edges(
+            "validate_input",
+            lambda state: "handle_error" if state.get("error_message") else "get_students",
+        )
+        workflow.add_conditional_edges(
+            "get_students",
+            lambda state: "handle_error" if state.get("error_message") else "get_tasks",
+        )
+        workflow.add_conditional_edges(
+            "get_tasks",
+            lambda state: "handle_error" if state.get("error_message") else "review_students",
+        )
+        workflow.add_conditional_edges(
+            "review_students",
+            lambda state: "handle_error" if state.get("error_message") else "generate_summary",
+        )
+        workflow.add_conditional_edges(
+            "generate_summary",
+            lambda state: "handle_error" if state.get("error_message") else "save_results",
+        )
         workflow.add_edge("save_results", END)
-        
-        # Error handling
-        workflow.add_edge("validate_input", "handle_error")
-        workflow.add_edge("get_students", "handle_error")
-        workflow.add_edge("get_tasks", "handle_error")
-        workflow.add_edge("review_students", "handle_error")
-        workflow.add_edge("generate_summary", "handle_error")
         workflow.add_edge("handle_error", END)
         
         return workflow.compile()

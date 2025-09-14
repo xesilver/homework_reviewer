@@ -5,13 +5,11 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils.dataframe import dataframe_to_rows
 
 from ..core import logger, ensure_directory
 from ..core.config import settings
-from ..models.schemas import ReviewResponse, TaskReview
+from ..models.schemas import ReviewResponse
 
 
 class ExcelService:

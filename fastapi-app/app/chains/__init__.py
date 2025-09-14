@@ -11,7 +11,6 @@ from .prompts import (
     review_prompt,
     task_specific_prompt,
 )
-from .review_chains import BatchReviewChain, LectureSummaryChain, ReviewChain
 from .tools import (
     CodeAnalysisTool,
     CodeReaderTool,
@@ -30,9 +29,6 @@ __all__ = [
     "quick_review_prompt",
     "review_prompt",
     "task_specific_prompt",
-    "BatchReviewChain",
-    "LectureSummaryChain",
-    "ReviewChain",
     "CodeAnalysisTool",
     "CodeReaderTool",
     "RepositoryExplorerTool",

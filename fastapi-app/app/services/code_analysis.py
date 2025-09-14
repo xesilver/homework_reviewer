@@ -4,10 +4,10 @@ Code analysis service for extracting code metrics and information.
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, Any
 from dataclasses import dataclass
 
-from ..core import logger, is_code_file
+from ..core import logger
 
 
 @dataclass

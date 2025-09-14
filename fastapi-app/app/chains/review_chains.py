@@ -2,11 +2,7 @@
 LangChain chains for homework review workflow.
 """
 from typing import Dict, List, Any, Optional
-from langchain.chains import LLMChain
-from langchain_openai import OpenAI
-from langchain.schema import BaseOutputParser
-from langchain.callbacks import BaseCallbackHandler
-from pydantic import BaseModel, Field
+from langchain_openai import ChatOpenAI
 
 from ..core import logger, settings
 from ..services import CodeAnalysisService, RepositoryService
@@ -14,19 +10,17 @@ from .prompts import (
     review_prompt,
     quick_review_prompt,
     code_analysis_prompt,
-    task_specific_prompt,
     batch_review_prompt,
     lecture_summary_prompt,
     ReviewOutputParser
 )
-from .tools import get_review_tools
 
 
 class ReviewChain:
     """Main chain for homework review process."""
     
-    def __init__(self, llm: Optional[OpenAI] = None):
-        self.llm = llm or OpenAI(
+    def __init__(self, llm: Optional[ChatOpenAI] = None):
+        self.llm = llm or ChatOpenAI(
             openai_api_key=settings.openai_api_key,
             model_name=settings.openai_model,
             temperature=0.1
@@ -36,21 +30,11 @@ class ReviewChain:
         self.output_parser = ReviewOutputParser()
         
         # Create chains
-        self.review_chain = LLMChain(
-            llm=self.llm,
-            prompt=review_prompt,
-            output_parser=self.output_parser
-        )
+        self.review_chain = review_prompt | self.llm | self.output_parser
         
-        self.quick_review_chain = LLMChain(
-            llm=self.llm,
-            prompt=quick_review_prompt
-        )
+        self.quick_review_chain = quick_review_prompt | self.llm
         
-        self.code_analysis_chain = LLMChain(
-            llm=self.llm,
-            prompt=code_analysis_prompt
-        )
+        self.code_analysis_chain = code_analysis_prompt | self.llm
     
     def review_student_task(
         self, 
@@ -96,7 +80,7 @@ class ReviewChain:
             }
             
             # Run review chain
-            result = self.review_chain.run(**chain_input)
+            result = self.review_chain.invoke(chain_input)
             
             # Parse result
             if isinstance(result, dict):
@@ -142,11 +126,11 @@ class ReviewChain:
             Dictionary with quick review results
         """
         try:
-            result = self.quick_review_chain.run(
-                student_surname=student_surname,
-                task_name=task,
-                code_content=code_content
-            )
+            result = self.quick_review_chain.invoke({
+                "student_surname": student_surname,
+                "task_name": task,
+                "code_content": code_content
+            })
             
             # Parse result (simplified)
             lines = result.strip().split('\n')
@@ -187,7 +171,7 @@ class ReviewChain:
             Analysis results as string
         """
         try:
-            result = self.code_analysis_chain.run(code_content=code_content)
+            result = self.code_analysis_chain.invoke({"code_content": code_content})
             return result
         except Exception as e:
             logger.error(f"Error analyzing code: {e}")
@@ -219,17 +203,14 @@ Code Metrics Summary:
 class BatchReviewChain:
     """Chain for reviewing multiple students' submissions."""
     
-    def __init__(self, llm: Optional[OpenAI] = None):
-        self.llm = llm or OpenAI(
+    def __init__(self, llm: Optional[ChatOpenAI] = None):
+        self.llm = llm or ChatOpenAI(
             openai_api_key=settings.openai_api_key,
             model_name=settings.openai_model,
             temperature=0.1
         )
         self.repo_service = RepositoryService()
-        self.batch_review_chain = LLMChain(
-            llm=self.llm,
-            prompt=batch_review_prompt
-        )
+        self.batch_review_chain = batch_review_prompt | self.llm
     
     def review_lecture_task(
         self, 
@@ -265,11 +246,11 @@ class BatchReviewChain:
             
             # Run batch review
             submissions_text = "\n".join(submissions_data)
-            result = self.batch_review_chain.run(
-                task_name=task,
-                task_description=task_description or f"Task {task}",
-                submissions=submissions_text
-            )
+            result = self.batch_review_chain.invoke({
+                "task_name": task,
+                "task_description": task_description or f"Task {task}",
+                "submissions": submissions_text
+            })
             
             # Parse results (simplified)
             reviews = []
@@ -320,16 +301,13 @@ class BatchReviewChain:
 class LectureSummaryChain:
     """Chain for generating lecture-wide summaries."""
     
-    def __init__(self, llm: Optional[OpenAI] = None):
-        self.llm = llm or OpenAI(
+    def __init__(self, llm: Optional[ChatOpenAI] = None):
+        self.llm = llm or ChatOpenAI(
             openai_api_key=settings.openai_api_key,
             model_name=settings.openai_model,
             temperature=0.1
         )
-        self.summary_chain = LLMChain(
-            llm=self.llm,
-            prompt=lecture_summary_prompt
-        )
+        self.summary_chain = lecture_summary_prompt | self.llm
     
     def generate_lecture_summary(
         self, 
@@ -361,12 +339,12 @@ class LectureSummaryChain:
                 results_text += f"- {result.get('student', 'Unknown')}: {result.get('score', 0)} - {result.get('comments', 'No comments')}\n"
             
             # Generate summary
-            summary = self.summary_chain.run(
-                lecture_number=lecture_number,
-                total_students=total_students,
-                average_score=average_score,
-                student_results=results_text
-            )
+            summary = self.summary_chain.invoke({
+                "lecture_number": lecture_number,
+                "total_students": total_students,
+                "average_score": average_score,
+                "student_results": results_text
+            })
             
             return summary
             

@@ -1,9 +1,8 @@
 """
 LangChain tools for homework review process.
 """
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional, Type
 from langchain.tools import BaseTool
-from langchain.schema import BaseOutputParser
 from pydantic import BaseModel, Field
 
 from ..services import CodeAnalysisService, RepositoryService
@@ -19,9 +18,9 @@ class CodeAnalysisInput(BaseModel):
 class CodeAnalysisTool(BaseTool):
     """Tool for analyzing code quality and extracting metrics."""
     
-    name = "code_analysis"
-    description = "Analyze code quality and extract metrics like complexity, style, and documentation"
-    args_schema = CodeAnalysisInput
+    name: str = "code_analysis"
+    description: str = "Analyze code quality and extract metrics like complexity, style, and documentation"
+    args_schema: Type[CodeAnalysisInput] = CodeAnalysisInput
     
     def __init__(self):
         super().__init__()
@@ -62,9 +61,9 @@ class RepositoryExplorerInput(BaseModel):
 class RepositoryExplorerTool(BaseTool):
     """Tool for exploring homework repository structure."""
     
-    name = "repository_explorer"
-    description = "Explore homework repository structure and find student submissions"
-    args_schema = RepositoryExplorerInput
+    name: str = "repository_explorer"
+    description: str = "Explore homework repository structure and find student submissions"
+    args_schema: Type[RepositoryExplorerInput] = RepositoryExplorerInput
     
     def __init__(self):
         super().__init__()
@@ -107,9 +106,9 @@ class CodeReaderInput(BaseModel):
 class CodeReaderTool(BaseTool):
     """Tool for reading student code submissions."""
     
-    name = "code_reader"
-    description = "Read student code submissions for a specific task"
-    args_schema = CodeReaderInput
+    name: str = "code_reader"
+    description: str = "Read student code submissions for a specific task"
+    args_schema: Type[CodeReaderInput] = CodeReaderInput
     
     def __init__(self):
         super().__init__()
@@ -149,9 +148,9 @@ class ScoreCalculatorInput(BaseModel):
 class ScoreCalculatorTool(BaseTool):
     """Tool for calculating weighted scores."""
     
-    name = "score_calculator"
-    description = "Calculate weighted overall score from individual criteria scores"
-    args_schema = ScoreCalculatorInput
+    name: str = "score_calculator"
+    description: str = "Calculate weighted overall score from individual criteria scores"
+    args_schema: Type[ScoreCalculatorInput] = ScoreCalculatorInput
     
     def _run(
         self, 
@@ -217,9 +216,9 @@ class ReviewValidatorInput(BaseModel):
 class ReviewValidatorTool(BaseTool):
     """Tool for validating review results."""
     
-    name = "review_validator"
-    description = "Validate review results for consistency and completeness"
-    args_schema = ReviewValidatorInput
+    name: str = "review_validator"
+    description: str = "Validate review results for consistency and completeness"
+    args_schema: Type[ReviewValidatorInput] = ReviewValidatorInput
     
     def _run(self, score: int, comments: str) -> str:
         """Validate review results."""
@@ -245,7 +244,7 @@ class ReviewValidatorTool(BaseTool):
                 issues.append("Comments should include positive feedback or suggestions")
             
             if issues:
-                return f"Review validation issues found:\n" + "\n".join(f"- {issue}" for issue in issues)
+                return "Review validation issues found:\n" + "\n".join(f"- {issue}" for issue in issues)
             else:
                 return "Review validation passed - no issues found"
                 

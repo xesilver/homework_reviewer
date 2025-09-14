@@ -186,3 +186,126 @@ timestamp
 2025-09-14 13:04:43,110 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
 2025-09-14 13:04:43,110 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
 2025-09-14 13:11:28,151 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 13:43:05,531 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 13:43:05,532 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 13:43:42,081 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 13:43:46,171 - homework_reviewer - INFO - review_agent.py:119 - Input validation passed for Ivanov
+2025-09-14 13:43:46,187 - homework_reviewer - INFO - review_agent.py:156 - Retrieved code for Ivanov
+2025-09-14 13:43:46,188 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:43:46,207 - homework_reviewer - ERROR - review_agent.py:351 - Workflow execution failed: At key 'student_surname': Can receive only one value per step. Use an Annotated key to handle multiple values.
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_CONCURRENT_GRAPH_UPDATE
+2025-09-14 13:43:46,219 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 0.05s
+2025-09-14 13:45:25,543 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 13:45:28,876 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 13:45:28,877 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 13:45:45,809 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 13:45:49,342 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 13:45:49,343 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 13:46:06,188 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 13:46:07,233 - homework_reviewer - INFO - review_agent.py:119 - Input validation passed for Ivanov
+2025-09-14 13:46:07,235 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:46:07,236 - homework_reviewer - INFO - review_agent.py:156 - Retrieved code for Ivanov
+2025-09-14 13:46:07,237 - homework_reviewer - ERROR - review_agent.py:351 - Workflow execution failed: At key 'current_step': Can receive only one value per step. Use an Annotated key to handle multiple values.
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_CONCURRENT_GRAPH_UPDATE
+2025-09-14 13:46:07,237 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 0.01s
+2025-09-14 13:48:16,601 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 13:48:20,089 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 13:48:20,090 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 13:48:34,713 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 13:48:37,972 - homework_reviewer - INFO - review_agent.py:119 - Input validation passed for Ivanov
+2025-09-14 13:48:37,980 - homework_reviewer - INFO - review_agent.py:156 - Retrieved code for Ivanov
+2025-09-14 13:48:37,980 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:48:38,002 - homework_reviewer - INFO - review_agent.py:174 - Code analysis completed for Ivanov
+2025-09-14 13:48:38,003 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:48:38,012 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:48:39,104 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/completions "HTTP/1.1 404 Not Found"
+2025-09-14 13:48:39,106 - homework_reviewer - ERROR - review_chains.py:110 - Error reviewing student task: Error code: 404 - {'error': {'message': 'This is a chat model and not supported in the v1/completions endpoint. Did you mean to use v1/chat/completions?', 'type': 'invalid_request_error', 'param': 'model', 'code': None}}
+2025-09-14 13:48:39,826 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/completions "HTTP/1.1 404 Not Found"
+2025-09-14 13:48:39,827 - homework_reviewer - ERROR - review_chains.py:110 - Error reviewing student task: Error code: 404 - {'error': {'message': 'This is a chat model and not supported in the v1/completions endpoint. Did you mean to use v1/chat/completions?', 'type': 'invalid_request_error', 'param': 'model', 'code': None}}
+2025-09-14 13:48:39,829 - homework_reviewer - INFO - review_agent.py:218 - Code review completed for Ivanov
+2025-09-14 13:48:39,834 - homework_reviewer - INFO - review_agent.py:275 - Score calculation completed for Ivanov
+2025-09-14 13:48:39,835 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:48:39,843 - homework_reviewer - ERROR - review_agent.py:304 - Workflow error: None
+2025-09-14 13:48:39,980 - homework_reviewer - INFO - excel.py:178 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 13:48:39,980 - homework_reviewer - INFO - review_agent.py:293 - Results saved for Ivanov
+2025-09-14 13:48:39,983 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 2.01s
+2025-09-14 15:00:39,693 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:08:57,466 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:08:57,466 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:08:57,546 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:08:58,630 - homework_reviewer - INFO - review_agent.py:120 - Input validation passed for Ivanov
+2025-09-14 15:08:58,632 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:08:58,663 - homework_reviewer - INFO - review_agent.py:157 - Retrieved code for Ivanov
+2025-09-14 15:08:58,665 - homework_reviewer - INFO - review_agent.py:175 - Code analysis completed for Ivanov
+2025-09-14 15:08:58,665 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:08:58,666 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:09:27,800 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:09:27,801 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:14:26,776 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:16:43,730 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:16:43,730 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:17:10,207 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:17:14,073 - homework_reviewer - INFO - review_agent.py:120 - Input validation passed for Ivanov
+2025-09-14 15:17:14,077 - homework_reviewer - INFO - review_agent.py:157 - Retrieved code for Ivanov
+2025-09-14 15:17:14,078 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:17:14,085 - homework_reviewer - INFO - review_agent.py:175 - Code analysis completed for Ivanov
+2025-09-14 15:17:14,085 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:17:14,088 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:17:27,134 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:17:49,042 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:17:49,051 - homework_reviewer - INFO - review_agent.py:219 - Code review completed for Ivanov
+2025-09-14 15:17:49,053 - homework_reviewer - INFO - review_agent.py:276 - Score calculation completed for Ivanov
+2025-09-14 15:17:49,053 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:17:49,056 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:17:49,117 - homework_reviewer - INFO - excel.py:178 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 15:17:49,118 - homework_reviewer - INFO - review_agent.py:294 - Results saved for Ivanov
+2025-09-14 15:17:49,122 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 35.05s
+2025-09-14 15:22:48,407 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:22:52,285 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:22:52,286 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:23:03,909 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:23:07,578 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:23:07,580 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:23:46,310 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:23:49,190 - homework_reviewer - INFO - review_agent.py:120 - Input validation passed for Ivanov
+2025-09-14 15:23:49,193 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:23:49,199 - homework_reviewer - INFO - review_agent.py:157 - Retrieved code for Ivanov
+2025-09-14 15:23:49,202 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:23:49,202 - homework_reviewer - INFO - review_agent.py:175 - Code analysis completed for Ivanov
+2025-09-14 15:23:49,206 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:24:08,274 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:24:39,861 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:24:39,870 - homework_reviewer - INFO - review_agent.py:219 - Code review completed for Ivanov
+2025-09-14 15:24:39,874 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:24:39,874 - homework_reviewer - INFO - review_agent.py:276 - Score calculation completed for Ivanov
+2025-09-14 15:24:39,880 - homework_reviewer - ERROR - review_agent.py:305 - Workflow error: None
+2025-09-14 15:24:40,002 - homework_reviewer - INFO - excel.py:178 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 15:24:40,004 - homework_reviewer - INFO - review_agent.py:294 - Results saved for Ivanov
+2025-09-14 15:24:40,005 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 50.82s
+2025-09-14 15:27:57,024 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:28:02,326 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:28:02,326 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:28:06,021 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:28:06,022 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:28:22,590 - homework_reviewer - INFO - review.py:56 - Starting review for student Ivanov, lecture 1
+2025-09-14 15:28:24,723 - homework_reviewer - INFO - review_agent.py:130 - Input validation passed for Ivanov
+2025-09-14 15:28:24,729 - homework_reviewer - INFO - review_agent.py:167 - Retrieved code for Ivanov
+2025-09-14 15:28:24,739 - homework_reviewer - INFO - review_agent.py:185 - Code analysis completed for Ivanov
+2025-09-14 15:28:44,362 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:29:07,333 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 15:29:07,341 - homework_reviewer - INFO - review_agent.py:229 - Code review completed for Ivanov
+2025-09-14 15:29:07,342 - homework_reviewer - INFO - review_agent.py:286 - Score calculation completed for Ivanov
+2025-09-14 15:29:07,390 - homework_reviewer - INFO - excel.py:178 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 15:29:07,391 - homework_reviewer - INFO - review_agent.py:304 - Results saved for Ivanov
+2025-09-14 15:29:07,392 - homework_reviewer - INFO - review.py:81 - Completed review for Ivanov in 42.67s
+2025-09-14 15:32:02,323 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:32:05,723 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:32:05,724 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:33:15,774 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 15:33:19,373 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:33:19,375 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:33:22,918 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:33:22,919 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:33:26,019 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 15:33:26,020 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 15:33:37,608 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...

@@ -12,7 +12,6 @@ from ..models.schemas import (
     ReviewResponse,
     LectureReviewRequest,
     LectureReviewResponse,
-    ErrorResponse,
     HealthResponse
 )
 from ..agents import HomeworkReviewAgent, LectureReviewAgent

@@ -4,7 +4,7 @@ Core utilities and helpers for the AI Homework Reviewer.
 import asyncio
 import functools
 import time
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import Callable, TypeVar, Union
 from pathlib import Path
 
 from .logging import logger

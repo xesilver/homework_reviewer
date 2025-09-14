@@ -1,7 +1,6 @@
 """
 LangChain prompt templates for homework review.
 """
-from typing import Dict, List, Any
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseOutputParser
 from pydantic import BaseModel, Field
