@@ -207,6 +207,7 @@ class HomeworkReviewAgent:
                         state["lecture_number"],
                         task_number
                     )
+                    task_result['task'] = task  # Add this line to use the full task name
                     review_results.append(task_result)
                 
                 # Combine results
@@ -515,8 +516,13 @@ class LectureReviewAgent:
             state["student_results"] = student_results
             state["current_step"] = "students_reviewed"
             logger.info(f"Completed review of {len(student_results)} students")
-            return state
             
+            # Add this to set the final response
+            state["final_response"] = {
+                "student_results": student_results
+            }
+            return state
+
         except Exception as e:
             state["error_message"] = f"Error reviewing students: {str(e)}"
             logger.error(f"Student review failed: {e}")

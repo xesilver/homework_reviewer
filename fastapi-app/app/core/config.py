@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     
     # OpenAI Settings
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-4", env="OPENAI_MODEL")
+    openai_model: str = Field(default="gpt-5-nano", env="OPENAI_MODEL")
     
     # File Paths
     homework_dir: Path = Field(default=Path("homework"), env="HOMEWORK_DIR")

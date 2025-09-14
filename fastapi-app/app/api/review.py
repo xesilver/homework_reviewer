@@ -141,10 +141,10 @@ async def review_lecture(request: LectureReviewRequest, background_tasks: Backgr
             # Calculate average score
             total_score = 0
             valid_results = 0
-            
+
             for student_result in student_results:
-                if student_result:  # Check if result exists
-                    total_score += student_result.average_score
+                if student_result and 'result' in student_result:  # Check if result exists
+                    total_score += student_result['result'].average_score
                     valid_results += 1
             
             average_score = total_score / valid_results if valid_results > 0 else 0
@@ -156,7 +156,7 @@ async def review_lecture(request: LectureReviewRequest, background_tasks: Backgr
             lecture_number=request.lecture_number,
             total_students=total_students,
             average_score=average_score,
-            student_results=[sr for sr in student_results if sr],  # Filter out None results
+            student_results=[sr['result'] for sr in student_results if sr and 'result' in sr],  # Extract ReviewResponse objects
             processing_time=(end_time - start_time).total_seconds()
         )
         

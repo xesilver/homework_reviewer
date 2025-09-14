@@ -354,3 +354,119 @@ For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/er
 2025-09-14 16:00:03,145 - homework_reviewer - INFO - review_agent.py:299 - Results saved for Petrov
 2025-09-14 16:00:03,151 - homework_reviewer - INFO - review.py:80 - Completed review for Petrov in 61.89s
 2025-09-14 16:05:11,931 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:06:45,962 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:06:45,962 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:08:15,489 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:08:19,075 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:08:19,075 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:08:26,580 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:08:32,414 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:08:32,415 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:30:12,086 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:30:15,366 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:30:15,366 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:30:29,853 - homework_reviewer - INFO - review.py:55 - Starting review for student Petrov, lecture 1
+2025-09-14 16:30:30,919 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Petrov
+2025-09-14 16:30:30,921 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Petrov
+2025-09-14 16:30:30,924 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Petrov
+2025-09-14 16:30:50,133 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:31:04,349 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:31:04,364 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Petrov
+2025-09-14 16:31:04,377 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Petrov
+2025-09-14 16:31:04,574 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 16:31:04,574 - homework_reviewer - INFO - review_agent.py:300 - Results saved for Petrov
+2025-09-14 16:31:04,576 - homework_reviewer - INFO - review.py:80 - Completed review for Petrov in 33.66s
+2025-09-14 16:32:03,089 - homework_reviewer - INFO - review.py:103 - Starting lecture review for lecture 1
+2025-09-14 16:32:03,181 - homework_reviewer - INFO - review_agent.py:434 - Lecture review validation passed for lecture 1
+2025-09-14 16:32:03,191 - homework_reviewer - INFO - review_agent.py:456 - Retrieved 1 students for lecture 1
+2025-09-14 16:32:03,201 - homework_reviewer - INFO - review_agent.py:475 - Retrieved 2 tasks for lecture 1
+2025-09-14 16:32:03,298 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Petrov
+2025-09-14 16:32:03,310 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Petrov
+2025-09-14 16:32:03,329 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Petrov
+2025-09-14 16:32:17,464 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:32:33,010 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:32:33,019 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Petrov
+2025-09-14 16:32:33,022 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Petrov
+2025-09-14 16:32:33,047 - homework_reviewer - ERROR - review_agent.py:305 - Results saving failed: [Errno 13] Permission denied: 'results\\lecture_1_reviews.xlsx'
+2025-09-14 16:32:33,056 - homework_reviewer - INFO - review_agent.py:507 - Reviewed student Petrov (1/1)
+2025-09-14 16:32:33,056 - homework_reviewer - INFO - review_agent.py:518 - Completed review of 1 students
+2025-09-14 16:32:42,657 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:32:42,668 - homework_reviewer - INFO - review_agent.py:536 - Generated summary for lecture 1
+2025-09-14 16:32:42,683 - homework_reviewer - INFO - review_agent.py:549 - All results saved for lecture 1
+2025-09-14 16:32:42,697 - homework_reviewer - ERROR - review.py:169 - Error reviewing lecture 1: 'NoneType' object has no attribute 'get'
+2025-09-14 16:33:54,420 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:36:47,593 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:36:47,594 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:36:52,588 - homework_reviewer - INFO - review.py:103 - Starting lecture review for lecture 1
+2025-09-14 16:36:55,471 - homework_reviewer - INFO - review_agent.py:434 - Lecture review validation passed for lecture 1
+2025-09-14 16:36:55,474 - homework_reviewer - INFO - review_agent.py:456 - Retrieved 1 students for lecture 1
+2025-09-14 16:36:55,477 - homework_reviewer - INFO - review_agent.py:475 - Retrieved 2 tasks for lecture 1
+2025-09-14 16:36:55,509 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Petrov
+2025-09-14 16:36:55,516 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Petrov
+2025-09-14 16:36:55,523 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Petrov
+2025-09-14 16:37:05,989 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:37:24,651 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:37:24,665 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Petrov
+2025-09-14 16:37:24,692 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Petrov
+2025-09-14 16:37:24,846 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 16:37:24,846 - homework_reviewer - INFO - review_agent.py:300 - Results saved for Petrov
+2025-09-14 16:37:24,849 - homework_reviewer - INFO - review_agent.py:507 - Reviewed student Petrov (1/1)
+2025-09-14 16:37:24,849 - homework_reviewer - INFO - review_agent.py:518 - Completed review of 1 students
+2025-09-14 16:37:32,710 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:37:32,723 - homework_reviewer - INFO - review_agent.py:536 - Generated summary for lecture 1
+2025-09-14 16:37:32,725 - homework_reviewer - INFO - review_agent.py:549 - All results saved for lecture 1
+2025-09-14 16:37:32,732 - homework_reviewer - ERROR - review.py:169 - Error reviewing lecture 1: 'NoneType' object has no attribute 'get'
+2025-09-14 16:40:09,154 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:40:12,579 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:40:12,580 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:40:19,523 - homework_reviewer - INFO - main.py:43 - Shutting down AI Homework Reviewer application...
+2025-09-14 16:40:22,908 - homework_reviewer - INFO - main.py:26 - Starting AI Homework Reviewer application...
+2025-09-14 16:40:22,909 - homework_reviewer - INFO - main.py:36 - Services initialized successfully
+2025-09-14 16:40:24,768 - homework_reviewer - INFO - review.py:103 - Starting lecture review for lecture 1
+2025-09-14 16:40:25,668 - homework_reviewer - INFO - review_agent.py:434 - Lecture review validation passed for lecture 1
+2025-09-14 16:40:25,669 - homework_reviewer - INFO - review_agent.py:456 - Retrieved 1 students for lecture 1
+2025-09-14 16:40:25,671 - homework_reviewer - INFO - review_agent.py:475 - Retrieved 2 tasks for lecture 1
+2025-09-14 16:40:25,685 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Petrov
+2025-09-14 16:40:25,688 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Petrov
+2025-09-14 16:40:25,691 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Petrov
+2025-09-14 16:40:39,927 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:40:50,396 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:40:50,406 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Petrov
+2025-09-14 16:40:50,416 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Petrov
+2025-09-14 16:40:50,626 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 16:40:50,628 - homework_reviewer - INFO - review_agent.py:300 - Results saved for Petrov
+2025-09-14 16:40:50,633 - homework_reviewer - INFO - review_agent.py:507 - Reviewed student Petrov (1/1)
+2025-09-14 16:40:50,634 - homework_reviewer - INFO - review_agent.py:518 - Completed review of 1 students
+2025-09-14 16:41:01,903 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:41:01,919 - homework_reviewer - INFO - review_agent.py:541 - Generated summary for lecture 1
+2025-09-14 16:41:01,933 - homework_reviewer - INFO - review_agent.py:554 - All results saved for lecture 1
+2025-09-14 16:41:01,944 - homework_reviewer - INFO - review.py:163 - Completed lecture review for lecture 1
+2025-09-14 16:49:10,184 - homework_reviewer - INFO - review.py:103 - Starting lecture review for lecture 1
+2025-09-14 16:49:10,247 - homework_reviewer - INFO - review_agent.py:434 - Lecture review validation passed for lecture 1
+2025-09-14 16:49:10,252 - homework_reviewer - INFO - review_agent.py:456 - Retrieved 1 students for lecture 1
+2025-09-14 16:49:10,259 - homework_reviewer - INFO - review_agent.py:475 - Retrieved 2 tasks for lecture 1
+2025-09-14 16:49:10,341 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Ivanov
+2025-09-14 16:49:10,350 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Ivanov
+2025-09-14 16:49:10,387 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Ivanov
+2025-09-14 16:49:24,420 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:49:35,598 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:49:35,606 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Ivanov
+2025-09-14 16:49:35,609 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Ivanov
+2025-09-14 16:49:35,705 - homework_reviewer - ERROR - review_agent.py:305 - Results saving failed: [Errno 13] Permission denied: 'results\\lecture_1_reviews.xlsx'
+2025-09-14 16:49:35,715 - homework_reviewer - INFO - review_agent.py:507 - Reviewed student Ivanov (1/1)
+2025-09-14 16:49:35,718 - homework_reviewer - INFO - review_agent.py:518 - Completed review of 1 students
+2025-09-14 16:49:45,945 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:49:45,957 - homework_reviewer - INFO - review_agent.py:541 - Generated summary for lecture 1
+2025-09-14 16:49:45,968 - homework_reviewer - INFO - review_agent.py:554 - All results saved for lecture 1
+2025-09-14 16:49:45,977 - homework_reviewer - INFO - review.py:163 - Completed lecture review for lecture 1
+2025-09-14 16:50:31,731 - homework_reviewer - INFO - review.py:55 - Starting review for student Ivanov, lecture 1
+2025-09-14 16:50:31,763 - homework_reviewer - INFO - review_agent.py:125 - Input validation passed for Ivanov
+2025-09-14 16:50:31,781 - homework_reviewer - INFO - review_agent.py:162 - Retrieved code for Ivanov
+2025-09-14 16:50:31,832 - homework_reviewer - INFO - review_agent.py:180 - Code analysis completed for Ivanov
+2025-09-14 16:50:45,192 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:50:56,101 - httpx - INFO - _client.py:1025 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-09-14 16:50:56,113 - homework_reviewer - INFO - review_agent.py:225 - Code review completed for Ivanov
+2025-09-14 16:50:56,125 - homework_reviewer - INFO - review_agent.py:282 - Score calculation completed for Ivanov
+2025-09-14 16:50:56,380 - homework_reviewer - INFO - excel.py:176 - Updated Excel file for lecture 1: results\lecture_1_reviews.xlsx
+2025-09-14 16:50:56,381 - homework_reviewer - INFO - review_agent.py:300 - Results saved for Ivanov
+2025-09-14 16:50:56,385 - homework_reviewer - INFO - review.py:80 - Completed review for Ivanov in 24.63s
