@@ -120,13 +120,13 @@ class SimpleReviewAgent:
             code_summary = analysis_service.get_code_summary(code_content)
             
             # Calculate scores based on metrics
-            technical_score = int(min(100, max(0, 100 - code_summary.get('average_complexity', 0) * 2)))
-            style_score = int(min(100, max(0, code_summary.get('average_naming_convention_score', 0))))
-            doc_score = int(min(100, max(0, code_summary.get('average_docstring_coverage', 0))))
+            technical_score = int(round(min(100, max(0, 100 - code_summary.get('average_complexity', 0) * 2))))
+            style_score = int(round(min(100, max(0, code_summary.get('average_naming_convention_score', 0)))))
+            doc_score = int(round(min(100, max(0, code_summary.get('average_docstring_coverage', 0)))))
             perf_score = 85  # Default performance score
             
             # Calculate overall score
-            overall_score = int((technical_score * 0.4 + style_score * 0.3 + doc_score * 0.2 + perf_score * 0.1))
+            overall_score = int(round(technical_score * 0.4 + style_score * 0.3 + doc_score * 0.2 + perf_score * 0.1))
             
             # Generate comments
             comments = self._generate_comments(code_summary, technical_score, style_score, doc_score)

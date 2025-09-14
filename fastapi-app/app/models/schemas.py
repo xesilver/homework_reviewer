@@ -69,7 +69,6 @@ class HealthResponse(BaseModel):
     status: str = Field(..., description="Service status")
     version: str = Field(..., description="Application version")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
-    uptime: Optional[float] = Field(None, description="Service uptime in seconds")
 
 
 class StudentInfo(BaseModel):

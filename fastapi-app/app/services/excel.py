@@ -138,8 +138,8 @@ class ExcelService:
         
         # Update or add rows for each task
         for task_review in review_response.details:
-            # Check if row exists
-            mask = (df['Surname'] == review_response.surname) & (df['Task'] == task_review.task)
+            # Check if row exists - convert both to string for comparison to handle type mismatches
+            mask = (df['Surname'] == review_response.surname) & (df['Task'].astype(str) == str(task_review.task))
             
             if mask.any():
                 # Update existing row
@@ -176,6 +176,54 @@ class ExcelService:
             self._format_excel_sheet(worksheet, df)
         
         logger.info(f"Updated Excel file for lecture {lecture_number}: {excel_path}")
+    
+    def remove_duplicate_entries(self, lecture_number: int) -> None:
+        """
+        Remove duplicate entries from Excel file, keeping the most recent review for each student-task combination.
+        
+        Args:
+            lecture_number: Lecture number
+        """
+        excel_path = self.get_excel_file_path(lecture_number)
+        
+        if not excel_path.exists():
+            logger.warning(f"Excel file not found: {excel_path}")
+            return
+        
+        df = pd.read_excel(excel_path, sheet_name='Reviews')
+        
+        if df.empty:
+            return
+        
+        logger.info(f"Before cleanup: {len(df)} entries")
+        
+        # Convert Review Date to datetime for proper sorting
+        df['Review Date'] = pd.to_datetime(df['Review Date'])
+        
+        # Convert Task column to string to handle mixed data types
+        df['Task'] = df['Task'].astype(str)
+        
+        # Sort by Review Date descending to keep most recent entries
+        df = df.sort_values(['Surname', 'Task', 'Review Date'], ascending=[True, True, False])
+        
+        # Remove duplicates, keeping the first (most recent) entry for each student-task combination
+        df_cleaned = df.drop_duplicates(subset=['Surname', 'Task'], keep='first')
+        
+        logger.info(f"After cleanup: {len(df_cleaned)} entries")
+        
+        # Sort back to original order
+        df_cleaned = df_cleaned.sort_values(['Surname', 'Task'])
+        
+        # Save cleaned data
+        with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
+            df_cleaned.to_excel(writer, sheet_name='Reviews', index=False)
+            
+            # Apply formatting
+            workbook = writer.book
+            worksheet = writer.sheets['Reviews']
+            self._format_excel_sheet(worksheet, df_cleaned)
+        
+        logger.info(f"Removed duplicate entries from Excel file for lecture {lecture_number}")
     
     def get_student_reviews(self, lecture_number: int, surname: Optional[str] = None) -> pd.DataFrame:
         """
@@ -222,15 +270,15 @@ class ExcelService:
             }
         
         summary = {
-            "total_students": df['Surname'].nunique(),
-            "total_tasks": df['Task'].nunique(),
-            "average_score": df['Score (%)'].mean(),
-            "completion_rate": (df['Score (%)'] > 0).mean() * 100,
+            "total_students": int(df['Surname'].nunique()),
+            "total_tasks": int(df['Task'].nunique()),
+            "average_score": int(df['Score (%)'].mean()),
+            "completion_rate": int((df['Score (%)'] > 0).mean() * 100),
             "score_distribution": {
-                "excellent": (df['Score (%)'] >= 90).sum(),
-                "good": ((df['Score (%)'] >= 80) & (df['Score (%)'] < 90)).sum(),
-                "satisfactory": ((df['Score (%)'] >= 70) & (df['Score (%)'] < 80)).sum(),
-                "needs_improvement": (df['Score (%)'] < 70).sum()
+                "excellent": int((df['Score (%)'] >= 90).sum()),
+                "good": int(((df['Score (%)'] >= 80) & (df['Score (%)'] < 90)).sum()),
+                "satisfactory": int(((df['Score (%)'] >= 70) & (df['Score (%)'] < 80)).sum()),
+                "needs_improvement": int((df['Score (%)'] < 70).sum())
             }
         }
         

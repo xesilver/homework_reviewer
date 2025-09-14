@@ -1,10 +1,9 @@
 """
 FastAPI endpoints for homework review API.
 """
-from typing import List, Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from typing import Optional
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
-import asyncio
 from datetime import datetime
 
 from ..core import logger, settings
@@ -35,7 +34,7 @@ async def health_check():
         return HealthResponse(
             status="healthy",
             version=settings.app_version,
-            timestamp=datetime.now()
+            timestamp=datetime.now().isoformat()
         )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
@@ -145,8 +144,8 @@ async def review_lecture(request: LectureReviewRequest, background_tasks: Backgr
             valid_results = 0
             
             for student_result in student_results:
-                if "result" in student_result and student_result["result"]:
-                    total_score += student_result["result"].average_score
+                if student_result:  # Check if result exists
+                    total_score += student_result.average_score
                     valid_results += 1
             
             average_score = total_score / valid_results if valid_results > 0 else 0
@@ -158,7 +157,7 @@ async def review_lecture(request: LectureReviewRequest, background_tasks: Backgr
             lecture_number=request.lecture_number,
             total_students=total_students,
             average_score=average_score,
-            student_results=[sr.get("result") for sr in student_results if sr.get("result")],
+            student_results=[sr for sr in student_results if sr],  # Filter out None results
             processing_time=(end_time - start_time).total_seconds()
         )
         
@@ -369,3 +368,25 @@ async def create_sample_structure(lecture_number: int, task_count: int = 2):
     except Exception as e:
         logger.error(f"Error creating sample structure: {e}")
         raise HTTPException(status_code=500, detail=f"Sample creation failed: {str(e)}")
+
+
+@router.post("/cleanup/{lecture_number}")
+async def cleanup_duplicates(lecture_number: int):
+    """
+    Remove duplicate entries from Excel file, keeping the most recent review for each student-task combination.
+    
+    Args:
+        lecture_number: Lecture number
+        
+    Returns:
+        Success message
+    """
+    try:
+        excel_service.remove_duplicate_entries(lecture_number)
+        return {
+            "message": f"Duplicate entries removed for lecture {lecture_number}",
+            "lecture_number": lecture_number
+        }
+    except Exception as e:
+        logger.error(f"Error cleaning up duplicates: {e}")
+        raise HTTPException(status_code=500, detail=f"Cleanup failed: {str(e)}")

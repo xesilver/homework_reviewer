@@ -232,12 +232,12 @@ class HomeworkReviewAgent:
                 # Single task review
                 task_review = TaskReview(
                     task=state["task"],
-                    score=review_result.get("score", 0),
+                    score=int(round(review_result.get("score", 0))),
                     comments=review_result.get("comments", ""),
-                    technical_correctness=review_result.get("technical_correctness", 0),
-                    code_style=review_result.get("code_style", 0),
-                    documentation=review_result.get("documentation", 0),
-                    performance=review_result.get("performance", 0)
+                    technical_correctness=int(round(review_result.get("technical_correctness", 0))),
+                    code_style=int(round(review_result.get("code_style", 0))),
+                    documentation=int(round(review_result.get("documentation", 0))),
+                    performance=int(round(review_result.get("performance", 0)))
                 )
                 
                 response = ReviewResponse(
@@ -253,12 +253,12 @@ class HomeworkReviewAgent:
                 for task_result in review_result.get("task_results", []):
                     task_review = TaskReview(
                         task=task_result.get("task", "unknown"),
-                        score=task_result.get("score", 0),
+                        score=int(round(task_result.get("score", 0))),
                         comments=task_result.get("comments", ""),
-                        technical_correctness=task_result.get("technical_correctness", 0),
-                        code_style=task_result.get("code_style", 0),
-                        documentation=task_result.get("documentation", 0),
-                        performance=task_result.get("performance", 0)
+                        technical_correctness=int(round(task_result.get("technical_correctness", 0))),
+                        code_style=int(round(task_result.get("code_style", 0))),
+                        documentation=int(round(task_result.get("documentation", 0))),
+                        performance=int(round(task_result.get("performance", 0)))
                     )
                     task_reviews.append(task_review)
                 
