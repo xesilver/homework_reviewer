@@ -29,192 +29,120 @@ excel_service = ExcelService()
 @router.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint."""
-    try:
-        return HealthResponse(
-            status="healthy",
-            version=settings.app_version,
-            timestamp=datetime.now().isoformat()
-        )
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        raise HTTPException(status_code=500, detail="Health check failed")
+    return HealthResponse(
+        status="healthy",
+        version=settings.app_version,
+        timestamp=datetime.now().isoformat()
+    )
 
 
 @router.post("/review/student", response_model=ReviewResponse)
 async def review_student(request: ReviewRequest):
     """
-    Review a specific student's homework submission.
-    
-    Args:
-        request: Review request with student surname and lecture number
-        
-    Returns:
-        ReviewResponse with detailed results
+    Review a specific student's homework submission from their GitHub repository.
     """
     try:
-        logger.info(f"Starting review for student {request.surname}, lecture {request.lecture_number}")
-        
-        # Validate repository structure
-        validation_issues = repo_service.validate_repository_structure()
-        if validation_issues.get("missing_directories") or validation_issues.get("no_students"):
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Repository validation failed: {validation_issues}"
-            )
-        
-        # Create review agent
+        logger.info(f"Starting GitHub review for user {request.username}, lecture {request.lecture_number}")
+
         review_agent = HomeworkReviewAgent()
-        
-        # Perform review
+
         start_time = datetime.now()
         result = await review_agent.review_student(
-            request.surname,
-            request.lecture_number
+            username=request.username,
+            lecture_number=request.lecture_number
         )
         end_time = datetime.now()
-        
-        # Add processing time
-        processing_time = (end_time - start_time).total_seconds()
-        result.processing_time = processing_time
-        
-        logger.info(f"Completed review for {request.surname} in {processing_time:.2f}s")
+
+        # Add processing time to the response
+        if result:
+            result.processing_time = (end_time - start_time).total_seconds()
+
+        logger.info(f"Completed GitHub review for {request.username} in {result.processing_time:.2f}s")
         return result
-        
-    except HTTPException:
-        raise
+
     except Exception as e:
-        logger.error(f"Error reviewing student {request.surname}: {e}")
-        raise HTTPException(status_code=500, detail=f"Review failed: {str(e)}")
+        logger.error(f"Error reviewing GitHub student {request.username}: {e}")
+        raise HTTPException(status_code=500, detail=f"GitHub review failed: {str(e)}")
 
 
 @router.post("/review/lecture", response_model=LectureReviewResponse)
 async def review_lecture(request: LectureReviewRequest, background_tasks: BackgroundTasks):
     """
-    Review all students' submissions for a specific lecture.
-    
-    Args:
-        request: Lecture review request
-        background_tasks: FastAPI background tasks
-        
-    Returns:
-        LectureReviewResponse with results
+    Review all students' submissions for a specific lecture from their GitHub repos.
     """
     try:
         logger.info(f"Starting lecture review for lecture {request.lecture_number}")
-        
-        # Validate repository structure
-        validation_issues = repo_service.validate_repository_structure()
-        if validation_issues.get("missing_directories") or validation_issues.get("no_students"):
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Repository validation failed: {validation_issues}"
-            )
-        
-        # Get students to review
-        if request.students:
-            students = request.students
-        else:
-            students = repo_service.get_all_students_in_lecture(request.lecture_number)
-        
-        if not students:
-            raise HTTPException(
-                status_code=404, 
-                detail=f"No students found for lecture {request.lecture_number}"
-            )
-        
-        # Create lecture review agent
-        lecture_agent = LectureReviewAgent()
-        
-        # Perform review
-        start_time = datetime.now()
-        result = await lecture_agent.review_lecture(
-            request.lecture_number,
-            students
-        )
-        end_time = datetime.now()
-        
-        # Calculate summary statistics
-        student_results = result.get("student_results", [])
-        total_students = len(student_results)
-        
-        if total_students > 0:
-            # Calculate average score
-            total_score = 0
-            valid_results = 0
 
-            for student_result in student_results:
-                if student_result and 'result' in student_result:  # Check if result exists
-                    total_score += student_result['result'].average_score
-                    valid_results += 1
-            
-            average_score = total_score / valid_results if valid_results > 0 else 0
-        else:
-            average_score = 0
+        # The logic to get usernames would need to come from a pre-defined list or another service,
+        # as we no longer scan a local directory. For now, it relies on the request.
+        usernames = request.usernames
+        if not usernames:
+            raise HTTPException(
+                status_code=400,
+                detail="A list of usernames is required for a lecture review."
+            )
+
+        lecture_agent = LectureReviewAgent()
+
+        start_time = datetime.now()
+        # This part of the agent would need to be adapted to iterate through usernames
+        # For now, this is a placeholder for the logic.
+        # result = await lecture_agent.review_lecture(request.lecture_number, usernames)
+        # The agent logic should be updated to handle this, for now, we simulate.
+        student_results = []
+        review_agent = HomeworkReviewAgent()
+        for username in usernames:
+             student_results.append(await review_agent.review_student(username, request.lecture_number))
         
-        # Create response
+        end_time = datetime.now()
+
+        total_students = len(student_results)
+        average_score = sum(res.average_score for res in student_results) / total_students if total_students > 0 else 0
+
         response = LectureReviewResponse(
             lecture_number=request.lecture_number,
             total_students=total_students,
             average_score=average_score,
-            student_results=[sr['result'] for sr in student_results if sr and 'result' in sr],  # Extract ReviewResponse objects
+            student_results=student_results,
             processing_time=(end_time - start_time).total_seconds()
         )
-        
+
         logger.info(f"Completed lecture review for lecture {request.lecture_number}")
         return response
-        
-    except HTTPException:
-        raise
+
     except Exception as e:
         logger.error(f"Error reviewing lecture {request.lecture_number}: {e}")
         raise HTTPException(status_code=500, detail=f"Lecture review failed: {str(e)}")
 
 
-@router.get("/students/{lecture_number}")
-async def get_students(lecture_number: int):
-    """
-    Get all students who have submissions for a specific lecture.
-    
-    Args:
-        lecture_number: Lecture number
-        
-    Returns:
-        List of student surnames
-    """
-    try:
-        students = repo_service.get_all_students_in_lecture(lecture_number)
-        return {
-            "lecture_number": lecture_number,
-            "students": students,
-            "total_count": len(students)
-        }
-    except Exception as e:
-        logger.error(f"Error getting students for lecture {lecture_number}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get students: {str(e)}")
+# The following endpoints for local file discovery are no longer relevant
+# and can be removed or adapted. For now, they are left but may not be useful.
 
+@router.get("/students/{lecture_number}")
+async def get_local_students(lecture_number: int):
+    """
+    (Legacy) Get all students from the local homework directory.
+    """
+    students = repo_service.get_all_students_in_lecture(lecture_number)
+    return {
+        "lecture_number": lecture_number,
+        "students": students,
+        "total_count": len(students),
+        "note": "This endpoint reflects the local 'homework' directory, not GitHub users."
+    }
 
 @router.get("/tasks/{lecture_number}")
 async def get_tasks(lecture_number: int):
     """
-    Get all tasks for a specific lecture.
-    
-    Args:
-        lecture_number: Lecture number
-        
-    Returns:
-        List of task identifiers
+    Get all tasks for a specific lecture from the local directory structure.
     """
-    try:
-        tasks = repo_service.get_lecture_tasks(lecture_number)
-        return {
-            "lecture_number": lecture_number,
-            "tasks": tasks,
-            "total_count": len(tasks)
-        }
-    except Exception as e:
-        logger.error(f"Error getting tasks for lecture {lecture_number}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get tasks: {str(e)}")
-
+    tasks = repo_service.get_lecture_tasks(lecture_number)
+    return {
+        "lecture_number": lecture_number,
+        "tasks": tasks,
+        "total_count": len(tasks),
+        "note": "This endpoint reflects the local 'homework' directory structure."
+    }
 
 @router.get("/results/{lecture_number}")
 async def get_results(lecture_number: int, student_surname: Optional[str] = None):

@@ -19,7 +19,7 @@ from .prompts import (
 
 class ReviewChain:
     """Main chain for homework review process."""
-    
+
     def __init__(self, llm: Optional[ChatOpenAI] = None):
         self.llm = llm or ChatOpenAI(
             openai_api_key=settings.openai_api_key,
@@ -27,49 +27,36 @@ class ReviewChain:
             temperature=0.1
         )
         self.code_analysis_service = CodeAnalysisService()
-        self.repo_service = RepositoryService()
+        # RepositoryService is no longer needed here for reading code
         self.output_parser = ReviewOutputParser()
-        
+
         # Create chains
         self.review_chain = review_prompt | self.llm | StrOutputParser() | self.output_parser
-        
         self.quick_review_chain = quick_review_prompt | self.llm | StrOutputParser()
-        
         self.code_analysis_chain = code_analysis_prompt | self.llm | StrOutputParser()
-    
+
     def review_student_task(
-        self, 
-        student_surname: str, 
-        lecture_number: int, 
+        self,
+        student_surname: str,
+        lecture_number: int,
         task: str,
+        code_content: Dict[str, str], # UPDATED: Code is now passed in
         task_description: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Review a specific student's task submission.
-        
-        Args:
-            student_surname: Student's surname
-            lecture_number: Lecture number
-            task: Task identifier
-            task_description: Optional task description
-            
-        Returns:
-            Dictionary with review results
+        Review a specific student's task submission using the provided code.
         """
         try:
-            # Get student code
-            code_content = self.repo_service.read_student_code(lecture_number, task, student_surname)
-            
             if not code_content:
                 return {
                     "error": f"No code found for student {student_surname} in task {task}",
                     "score": 0,
                     "comments": "No submission found"
                 }
-            
+
             # Analyze code metrics
             code_summary = self.code_analysis_service.get_code_summary(code_content)
-            
+
             # Prepare input for review chain
             chain_input = {
                 "student_surname": student_surname,
@@ -79,10 +66,10 @@ class ReviewChain:
                 "code_content": self._format_code_content(code_content),
                 "code_metrics": self._format_code_metrics(code_summary)
             }
-            
+
             # Run review chain
             review_result = self.review_chain.invoke(chain_input)
-            
+
             return {
                 "task": task,
                 "score": review_result.overall_score,
@@ -93,7 +80,7 @@ class ReviewChain:
                 "performance": review_result.performance,
                 "code_metrics": code_summary
             }
-            
+
         except Exception as e:
             logger.error(f"Error reviewing student task: {e}")
             return {
@@ -102,23 +89,15 @@ class ReviewChain:
                 "score": 0,
                 "comments": f"Error during review: {str(e)}"
             }
-    
+
     def quick_review(
-        self, 
-        student_surname: str, 
-        task: str, 
+        self,
+        student_surname: str,
+        task: str,
         code_content: str
     ) -> Dict[str, Any]:
         """
         Perform a quick review of code submission.
-        
-        Args:
-            student_surname: Student's surname
-            task: Task identifier
-            code_content: Code content to review
-            
-        Returns:
-            Dictionary with quick review results
         """
         try:
             result = self.quick_review_chain.invoke({
@@ -126,12 +105,12 @@ class ReviewChain:
                 "task_name": task,
                 "code_content": code_content
             })
-            
+
             # Parse result (simplified)
             lines = result.strip().split('\n')
             score = 80  # Default
             comments = "Quick review completed"
-            
+
             for line in lines:
                 if line.lower().startswith('score:'):
                     try:
@@ -140,13 +119,13 @@ class ReviewChain:
                         pass
                 elif line.lower().startswith('comments:'):
                     comments = line.split(':', 1)[1].strip()
-            
+
             return {
                 "score": score,
                 "comments": comments,
                 "review_type": "quick"
             }
-            
+
         except Exception as e:
             logger.error(f"Error in quick review: {e}")
             return {
@@ -154,16 +133,10 @@ class ReviewChain:
                 "score": 0,
                 "comments": f"Error during quick review: {str(e)}"
             }
-    
+
     def analyze_code(self, code_content: str) -> str:
         """
         Analyze code and provide insights.
-        
-        Args:
-            code_content: Code content to analyze
-            
-        Returns:
-            Analysis results as string
         """
         try:
             result = self.code_analysis_chain.invoke({"code_content": code_content})
@@ -171,14 +144,14 @@ class ReviewChain:
         except Exception as e:
             logger.error(f"Error analyzing code: {e}")
             return f"Error analyzing code: {str(e)}"
-    
+
     def _format_code_content(self, code_content: Dict[str, str]) -> str:
         """Format code content for prompt."""
         formatted = ""
         for file_path, content in code_content.items():
             formatted += f"=== {file_path} ===\n{content}\n\n"
         return formatted
-    
+
     def _format_code_metrics(self, code_summary: Dict[str, Any]) -> str:
         """Format code metrics for prompt."""
         metrics = f"""
@@ -193,7 +166,6 @@ Code Metrics Summary:
 - Naming Convention Score: {code_summary['average_naming_convention_score']:.1f}%
 """
         return metrics
-
 
 class BatchReviewChain:
     """Chain for reviewing multiple students' submissions."""

@@ -13,6 +13,7 @@ from .schemas import (
     StudentInfo,
     TaskInfo,
     TaskReview,
+    GitHubReviewRequest
 )
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "StudentInfo",
     "TaskInfo",
     "TaskReview",
+    "GitHubReviewRequest"
 ]
