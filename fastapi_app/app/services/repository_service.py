@@ -53,17 +53,15 @@ class RepositoryService:
             logger.error(f"Failed to get repository for {github_nickname}: {e}")
             raise
 
-    # ... (the rest of the file can remain the same)
     def get_lecture_tasks(self, lecture_number: int, base_path: Optional[Path] = None) -> List[str]:
         """
         Get all task directories for a specific lecture from a given base path.
         """
         base_path = base_path or self.homework_dir
-        lecture_pattern = f"lecture{lecture_number}_task_*"
         task_dirs = []
 
         for item in base_path.iterdir():
-            if item.is_dir() and item.name.startswith(f"lecture{lecture_number}_task_"):
+            if item.is_dir() and item.name.startswith("task_"):
                 task_dirs.append(item.name)
 
         return sorted(task_dirs)
@@ -86,3 +84,4 @@ class RepositoryService:
                     relative_path = file_path.relative_to(task_path)
                     code_content[str(relative_path)] = f"Error reading file: {e}"
         return code_content
+
