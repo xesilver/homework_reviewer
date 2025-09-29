@@ -1,37 +1,25 @@
 # -----------------------------------------------------------------------------
 # AI Homework Reviewer Environment Variables
-#
-# Instructions:
-# 1. Rename this file to `.env` in the project's root directory.
-# 2. Fill in the placeholder values with your actual credentials and settings.
 # -----------------------------------------------------------------------------
 
-# -- OpenAI Configuration --
-# Your secret API key for accessing OpenAI models.
-OPENAI_API_KEY=your_openai_api_key_here
-# The specific OpenAI model to use for the review process (e.g., gpt-4, gpt-3.5-turbo).
-OPENAI_MODEL=gpt-4
+# -- Google Gemini Configuration --
+GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL=gemini-pro
 
 # -- GitHub Configuration --
-# A GitHub Personal Access Token (PAT) with 'repo' scope.
-# This is required to make authenticated API requests and avoid strict rate limits.
 GITHUB_TOKEN=your_github_personal_access_token_here
 
 # -- Local FastAPI Server Settings --
-# These are used when running the application locally as a REST API.
-DEBUG=false
-HOST=0.0.0.0
-PORT=8000
-HOMEWORK_DIR=homework
-RESULTS_DIR=results
+DEBUG=True
 
-# -- AWS Lambda & SES Configuration --
-# These variables are required for the serverless deployment on AWS.
-# The AWS region where your Lambda function and SES are configured (e.g., us-east-1).
-AWS_REGION=your-aws-region-here
-# The mount path for the EFS file system within the Lambda environment.
-STORAGE_PATH=/mnt/efs
-# The email address you have verified with Amazon SES to send notifications FROM.
+# -- Google Cloud & SendGrid Configuration --
+# The GCP Project ID where your services are located.
+GCP_PROJECT_ID=your-gcp-project-id
+# The GCS bucket for storing config and results.
+GCS_BUCKET_NAME=your-gcs-bucket-name
+# Your SendGrid API key.
+SENDGRID_API_KEY=your_sendgrid_api_key
+# The email address verified with SendGrid.
 SENDER_EMAIL=your-verified-sender-email@example.com
-# The email address that will receive the weekly summary reports.
+# The email address that will receive summary reports.
 RECIPIENT_EMAIL=your-recipient-email@example.com

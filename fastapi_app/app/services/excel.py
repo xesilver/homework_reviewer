@@ -1,103 +1,77 @@
-"""
-Excel handling service for storing and retrieving review results.
-"""
 import pandas as pd
 from pathlib import Path
-from typing import List, Optional
-from datetime import datetime
-from openpyxl.styles import Font, PatternFill, Alignment
+import io
+import os
+from typing import Optional
+from google.cloud import storage
 
-from ..core import logger, ensure_directory
+from ..core import logger
 from ..core.config import settings
 from ..models.schemas import ReviewResponse
 
 
 class ExcelService:
-    """Service for handling Excel files with review results."""
+    """Service for handling Excel files with review results stored in GCS."""
 
     def __init__(self, results_dir: Optional[Path] = None):
-        self.results_dir = results_dir or settings.results_dir
-        ensure_directory(self.results_dir)
+        self.gcs_client = storage.Client(project=settings.gcp_project_id)
+        self.bucket_name = os.environ.get("GCS_BUCKET_NAME")
+        self.results_folder = "results"
 
-    def get_excel_file_path(self, lecture_number: int) -> Path:
+    def get_excel_blob_path(self, lecture_number: int) -> str:
+        """Get the GCS blob path for a specific lecture's Excel file."""
+        return f"{self.results_folder}/lecture_{lecture_number}_reviews.xlsx"
+        
+    def get_student_reviews(self, lecture_number: int, username: Optional[str] = None) -> pd.DataFrame:
         """
-        Get the Excel file path for a specific lecture.
+        Get review results from Excel file in GCS.
         """
-        return self.results_dir / f"lecture_{lecture_number}_reviews.xlsx"
+        if not self.bucket_name:
+            logger.error("GCS_BUCKET_NAME environment variable not set.")
+            return pd.DataFrame()
 
-    def create_excel_template(self, lecture_number: int, usernames: List[str], tasks: List[str]) -> Path:
-        """
-        Create an Excel template for storing review results.
-        """
-        excel_path = self.get_excel_file_path(lecture_number)
+        bucket = self.gcs_client.bucket(self.bucket_name)
+        blob_path = self.get_excel_blob_path(lecture_number)
+        blob = bucket.blob(blob_path)
+        
+        try:
+            file_content = blob.download_as_bytes()
+            df = pd.read_excel(io.BytesIO(file_content), sheet_name='Reviews')
+            if username:
+                df = df[df['Username'] == username]
+            return df
+        except Exception:
+            logger.warning(f"Excel file not found in GCS: gs://{self.bucket_name}/{blob_path}")
+            return pd.DataFrame()
 
-        data = []
-        for username in usernames:
-            for task in tasks:
-                data.append({
-                    'Username': username,
-                    'Lecture': lecture_number,
-                    'Task': task,
-                    'Score (%)': 0,
-                    'Comments': '',
-                    'Technical Correctness': 0,
-                    'Code Style': 0,
-                    'Documentation': 0,
-                    'Performance': 0,
-                    'Review Date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                })
-
-        df = pd.DataFrame(data)
-
-        with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Reviews', index=False)
-            worksheet = writer.sheets['Reviews']
-            self._format_excel_sheet(worksheet, df)
-
-        logger.info(f"Created Excel template: {excel_path}")
-        return excel_path
-
-    def _format_excel_sheet(self, worksheet, df: pd.DataFrame) -> None:
-        """
-        Apply formatting to the Excel worksheet.
-        """
-        header_font = Font(bold=True, color="FFFFFF")
-        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
-
-        for cell in worksheet[1]:
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = Alignment(horizontal="center", vertical="center")
-
-        for column in worksheet.columns:
-            max_length = 0
-            column_letter = column[0].column_letter
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = min(max_length + 2, 50)
-            worksheet.column_dimensions[column_letter].width = adjusted_width
-
-        worksheet.freeze_panes = 'A2'
 
     def update_student_review(self, lecture_number: int, review_response: ReviewResponse) -> None:
         """
-        Update Excel file with review results for a student.
+        Update Excel file in GCS with review results for a student.
         """
-        excel_path = self.get_excel_file_path(lecture_number)
+        if not self.bucket_name:
+            logger.error("GCS_BUCKET_NAME environment variable not set. Cannot access GCS.")
+            return
 
-        if excel_path.exists():
-            df = pd.read_excel(excel_path, sheet_name='Reviews')
-        else:
+        bucket = self.gcs_client.bucket(self.bucket_name)
+        blob_path = self.get_excel_blob_path(lecture_number)
+        blob = bucket.blob(blob_path)
+
+        try:
+            # Download existing file content from GCS
+            file_content = blob.download_as_bytes()
+            df = pd.read_excel(io.BytesIO(file_content), sheet_name='Reviews')
+            logger.info(f"Loaded existing Excel file from GCS: gs://{self.bucket_name}/{blob_path}")
+        except Exception:
+            # File doesn't exist, create a new DataFrame
+            logger.info("Excel file not found in GCS. Creating a new one.")
             df = pd.DataFrame(columns=[
                 'Username', 'Lecture', 'Task', 'Score (%)', 'Comments',
                 'Technical Correctness', 'Code Style', 'Documentation',
                 'Performance', 'Review Date'
             ])
-
+            
+        # Update or add new rows
         for task_review in review_response.details:
             mask = (df['Username'] == review_response.username) & (df['Task'].astype(str) == str(task_review.task))
 
@@ -124,26 +98,12 @@ class ExcelService:
                 }
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
-        with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
+        # Save updated DataFrame to a byte buffer
+        output_buffer = io.BytesIO()
+        with pd.ExcelWriter(output_buffer, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Reviews', index=False)
-            worksheet = writer.sheets['Reviews']
-            self._format_excel_sheet(worksheet, df)
 
-        logger.info(f"Updated Excel file for lecture {lecture_number}: {excel_path}")
-
-    def get_student_reviews(self, lecture_number: int, username: Optional[str] = None) -> pd.DataFrame:
-        """
-        Get review results from Excel file.
-        """
-        excel_path = self.get_excel_file_path(lecture_number)
-
-        if not excel_path.exists():
-            logger.warning(f"Excel file not found: {excel_path}")
-            return pd.DataFrame()
-
-        df = pd.read_excel(excel_path, sheet_name='Reviews')
-
-        if username:
-            df = df[df['Username'] == username]
-
-        return df
+        # Upload the buffer to GCS
+        output_buffer.seek(0)
+        blob.upload_from_file(output_buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        logger.info(f"Successfully uploaded updated Excel file to GCS: gs://{self.bucket_name}/{blob_path}")

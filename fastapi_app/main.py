@@ -2,56 +2,61 @@ import os
 import json
 import asyncio
 from datetime import datetime
+from google.cloud import storage
 
 # The 'setup.py' file makes this standard import possible.
 from fastapi_app.app.agents import HomeworkReviewAgent
 from fastapi_app.app.services.notification import NotificationService
+from fastapi_app.app.services.repository_service import RepositoryService
 
-# --- Configuration ---
-# The list of students to review is now loaded from a JSON file on the EFS volume.
-# Default path: /mnt/efs/config/students.json
 
-def load_students_from_config_file():
-    """Loads and parses the student configuration from a JSON file on EFS."""
-    # The STORAGE_PATH will be /mnt/efs in the Lambda environment
-    storage_path = os.environ.get("STORAGE_PATH", "/tmp") # Default to /tmp for local testing
-    config_file_path = os.path.join(storage_path, "config", "students.json")
+def load_students_from_gcs():
+    """Loads and parses the student configuration from a JSON file in GCS."""
+    bucket_name = os.environ.get("GCS_BUCKET_NAME")
+    config_file_path = "config/students.json"
     
-    print(f"Attempting to load student configuration from: {config_file_path}")
-
-    if not os.path.exists(config_file_path):
-        print(f"WARNING: Configuration file not found at {config_file_path}. Using empty list.")
+    if not bucket_name:
+        print("ERROR: GCS_BUCKET_NAME not set. Cannot load student config.")
         return []
-    
+
     try:
-        with open(config_file_path, 'r') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        print(f"ERROR: Could not decode JSON from {config_file_path}. Please check the format.")
-        return []
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(config_file_path)
+        
+        print(f"Attempting to load student configuration from: gs://{bucket_name}/{config_file_path}")
+        
+        if not blob.exists():
+            print(f"WARNING: Configuration file not found at gs://{bucket_name}/{config_file_path}.")
+            return []
+            
+        config_content = blob.download_as_text()
+        return json.loads(config_content)
     except Exception as e:
-        print(f"ERROR: An unexpected error occurred while reading the config file: {e}")
+        print(f"ERROR: An unexpected error occurred while reading the config file from GCS: {e}")
         return []
 
-def handler(event, context):
+def homework_review_triggered(event, context):
     """
-    AWS Lambda handler function triggered by a weekly EventBridge schedule.
+    Google Cloud Function triggered by Cloud Scheduler.
     """
     print("--- Starting Weekly Homework Review Process ---")
 
     review_agent = HomeworkReviewAgent()
+    repo_service = RepositoryService()
     notification_service = NotificationService()
     
-    students_to_review = load_students_from_config_file()
+    students_to_review = load_students_from_gcs()
     review_outcomes = []
 
     if not students_to_review:
         print("No students configured for review. Exiting.")
-        return {'statusCode': 200, 'body': json.dumps('No students to review.')}
+        return ('No students to review.', 200)
 
     for student in students_to_review:
         username = student.get('username')
         lecture = student.get('lecture')
+        repo_path = None # To store the path for cleanup
 
         if not username or not lecture:
             print(f"Skipping invalid student entry: {student}")
@@ -60,10 +65,14 @@ def handler(event, context):
         print(f"-> Processing student: {username}, lecture: {lecture}")
         
         try:
+            # The agent now uses the updated repo_service which clones to /tmp
             result = asyncio.run(review_agent.review_student(
                 username=username,
                 lecture_number=lecture
             ))
+            # Get the path for cleanup
+            repo_path = repo_service.github_repos_path / username / f"lecture_{lecture}"
+
             outcome = f"✅ SUCCESS: {username} - Avg Score: {result.average_score:.2f}"
             print(f"   {outcome}")
             review_outcomes.append(outcome)
@@ -71,6 +80,10 @@ def handler(event, context):
             outcome = f"❌ ERROR: Failed to review {username}. Reason: {e}"
             print(f"   {outcome}")
             review_outcomes.append(outcome)
+        finally:
+            # Ensure cleanup happens whether the review succeeds or fails
+            if repo_path:
+                repo_service.cleanup_repository(repo_path)
 
     print("--- Review Process Finished. Sending Email Summary. ---")
     
@@ -81,27 +94,20 @@ def handler(event, context):
         outcomes_html = "".join([f"<li>{outcome}</li>" for outcome in review_outcomes])
         body_html = f"""
         <html>
-            <head></head>
             <body>
                 <h1>AI Homework Review Report</h1>
                 <p>The weekly automated review process has completed. Here are the results:</p>
                 <ul>
                     {outcomes_html}
                 </ul>
-                <p>The updated Excel file is available in the EFS storage mounted at {os.environ.get('STORAGE_PATH', '/mnt/efs')}.</p>
+                <p>The updated Excel reports are available in the GCS bucket: {os.environ.get('GCS_BUCKET_NAME')}.</p>
             </body>
         </html>
         """
-        
         notification_service.send_summary_email(
             recipient_email=recipient,
             subject=subject,
             body_html=body_html
         )
-    else:
-        print("WARNING: RECIPIENT_EMAIL not set. Skipping email notification.")
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Weekly review process and email notification completed successfully!')
-    }
+    return ('Weekly review process completed successfully!', 200)

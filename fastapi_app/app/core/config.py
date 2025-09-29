@@ -1,7 +1,6 @@
 """
 Core configuration and settings for the AI Homework Reviewer.
 """
-from pathlib import Path
 from typing import Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -17,37 +16,30 @@ class Settings(BaseSettings):
     host: str = Field(default="0.0.0.0", env="HOST")
     port: int = Field(default=8000, env="PORT")
 
-    # OpenAI Settings
-    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-4", env="OPENAI_MODEL")
-
-    # --- New & Updated Settings ---
+    # Google Gemini Settings
+    google_api_key: Optional[str] = Field(default=None, env="GOOGLE_API_KEY")
+    gemini_model: str = Field(default="gemini-1.5-pro", env="GEMINI_MODEL") # Updated default
 
     # GitHub Configuration
     github_token: Optional[str] = Field(default=None, env="GITHUB_TOKEN")
 
-    # File Paths (for local and Lambda)
-    homework_dir: Path = Field(default=Path("homework"), env="HOMEWORK_DIR")
-    results_dir: Path = Field(default=Path("results"), env="RESULTS_DIR")
-
-    # AWS Lambda & SES Configuration (with defaults for local running)
-    aws_region: Optional[str] = Field(default=None, env="AWS_REGION")
-    storage_path: Optional[str] = Field(default=None, env="STORAGE_PATH")
+    # Google Cloud & SendGrid Configuration
+    gcp_project_id: Optional[str] = Field(default=None, env="GCP_PROJECT_ID")
+    gcs_bucket_name: Optional[str] = Field(default=None, env="GCS_BUCKET_NAME")
+    sendgrid_api_key: Optional[str] = Field(default=None, env="SENDGRID_API_KEY")
     sender_email: Optional[str] = Field(default=None, env="SENDER_EMAIL")
     recipient_email: Optional[str] = Field(default=None, env="RECIPIENT_EMAIL")
 
     # Review Settings
     max_concurrent_reviews: int = Field(default=5, env="MAX_CONCURRENT_REVIEWS")
-    review_timeout: int = Field(default=300, env="REVIEW_TIMEOUT")  # 5 minutes
+    review_timeout: int = Field(default=300, env="REVIEW_TIMEOUT")
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-
 # Global settings instance
 settings = Settings()
-
 
 def get_settings() -> Settings:
     """Get application settings."""

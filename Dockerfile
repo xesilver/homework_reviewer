@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12
+FROM python:3.13.7
 
 # Set the working directory in the container
 WORKDIR /app
@@ -18,6 +18,6 @@ COPY . .
 # Install the local project package
 RUN pip install -e .
 
-# Set the command to be executed when the container starts for Lambda
-# This specifies the file and the handler function.
-CMD [ "lambda_handler.handler" ]
+# Set the entrypoint for Google Cloud Functions
+# The "functions-framework" will handle the request and call the "homework_review_triggered" function in "main.py"
+CMD ["functions-framework", "--target=homework_review_triggered"]

@@ -1,43 +1,31 @@
-# fastapi-app/app/services/notification.py
-import boto3
 import os
-from botocore.exceptions import ClientError
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from ..core.config import settings
 
 class NotificationService:
-    """A service for sending email notifications using Amazon SES."""
+    """A service for sending email notifications using SendGrid."""
 
     def __init__(self):
-        # The AWS region should be set in your Lambda's environment variables
-        self.ses_client = boto3.client("ses", region_name=os.environ.get("AWS_REGION"))
-        # The verified email address to send emails from
-        self.sender_email = os.environ.get("SENDER_EMAIL")
+        self.sendgrid_client = SendGridAPIClient(settings.sendgrid_api_key)
+        self.sender_email = settings.sender_email
 
     def send_summary_email(self, recipient_email: str, subject: str, body_html: str):
         """
         Sends a summary email to a specified recipient.
-        
-        Args:
-            recipient_email: The email address of the recipient.
-            subject: The subject of the email.
-            body_html: The HTML content of the email body.
         """
-        if not self.sender_email:
-            print("ERROR: SENDER_EMAIL environment variable is not set. Cannot send email.")
+        if not self.sender_email or not self.sendgrid_client.api_key:
+            print("ERROR: SENDER_EMAIL or SendGrid API key is not set. Cannot send email.")
             return
 
+        message = Mail(
+            from_email=self.sender_email,
+            to_emails=recipient_email,
+            subject=subject,
+            html_content=body_html
+        )
         try:
-            response = self.ses_client.send_email(
-                Destination={"ToAddresses": [recipient_email]},
-                Message={
-                    "Body": {
-                        "Html": {"Charset": "UTF-8", "Data": body_html}
-                    },
-                    "Subject": {"Charset": "UTF-8", "Data": subject},
-                },
-                Source=self.sender_email,
-            )
-            print(f"Email sent successfully! Message ID: {response['MessageId']}")
-        except ClientError as e:
-            print(f"ERROR: Failed to send email. {e.response['Error']['Message']}")
+            response = self.sendgrid_client.send(message)
+            print(f"Email sent successfully! Status Code: {response.status_code}")
         except Exception as e:
             print(f"An unexpected error occurred while sending email: {e}")
