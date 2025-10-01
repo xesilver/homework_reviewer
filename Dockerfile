@@ -1,20 +1,22 @@
 # Use an official Python runtime as a parent image
-FROM python:3.13.7
+FROM python:3.12
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container
+# Copy the requirements file and install dependencies first
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install any needed packages specified in requirements.txt
-# We also install git, which is needed to clone repositories.
-RUN apt-get update && apt-get install -y git && \
-    pip install --no-cache-dir -r requirements.txt
+# --- This is the key change ---
+# Copy the main.py with your cloud function entrypoint to the root
+COPY main.py .
 
-# Copy the rest of your application's code into the container
-COPY . .
+# Copy the entire fastapi_app directory, which contains all your code
+COPY fastapi_app/ ./fastapi_app
+
+# We no longer need `pip install -e .` as this is not a package installation
 
 # Set the entrypoint for Google Cloud Functions
-# The "functions-framework" will handle the request and call the "homework_review_triggered" function in "main.py"
+# This will now work because main.py is in the root of the WORKDIR
 CMD ["functions-framework", "--target=homework_review_triggered"]
