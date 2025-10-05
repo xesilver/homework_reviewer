@@ -1,7 +1,7 @@
 """
 Core module initialization.
 """
-from .config import Settings, get_settings, settings
+from .config import Settings, settings
 from .logging import logger, setup_logging
 from .utils import (
     async_retry,
@@ -15,7 +15,6 @@ from .utils import (
 
 __all__ = [
     "Settings",
-    "get_settings", 
     "settings",
     "logger",
     "setup_logging",

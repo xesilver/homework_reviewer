@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import io
 import os
+from datetime import timedelta
 from typing import Optional
 from google.cloud import storage
 
@@ -22,27 +23,31 @@ class ExcelService:
         """Get the GCS blob path for a specific lecture's Excel file."""
         return f"{self.results_folder}/lecture_{lecture_number}_reviews.xlsx"
         
-    def get_student_reviews(self, lecture_number: int, username: Optional[str] = None) -> pd.DataFrame:
-        """
-        Get review results from Excel file in GCS.
-        """
+    def get_excel_signed_url(self, lecture_number: int) -> Optional[str]:
+        """Generates a signed URL to download the Excel file."""
         if not self.bucket_name:
             logger.error("GCS_BUCKET_NAME environment variable not set.")
-            return pd.DataFrame()
-
-        bucket = self.gcs_client.bucket(self.bucket_name)
-        blob_path = self.get_excel_blob_path(lecture_number)
-        blob = bucket.blob(blob_path)
+            return None
         
         try:
-            file_content = blob.download_as_bytes()
-            df = pd.read_excel(io.BytesIO(file_content), sheet_name='Reviews')
-            if username:
-                df = df[df['Username'] == username]
-            return df
-        except Exception:
-            logger.warning(f"Excel file not found in GCS: gs://{self.bucket_name}/{blob_path}")
-            return pd.DataFrame()
+            bucket = self.gcs_client.bucket(self.bucket_name)
+            blob_path = self.get_excel_blob_path(lecture_number)
+            blob = bucket.blob(blob_path)
+
+            if not blob.exists():
+                logger.warning(f"Cannot generate signed URL. File not found: gs://{self.bucket_name}/{blob_path}")
+                return None
+
+            # Generate a URL that is valid for 1 hour
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(hours=1),
+                method="GET",
+            )
+            return url
+        except Exception as e:
+            logger.error(f"Failed to generate signed URL: {e}")
+            return None
 
 
     def update_student_review(self, lecture_number: int, review_response: ReviewResponse) -> None:
@@ -107,3 +112,32 @@ class ExcelService:
         output_buffer.seek(0)
         blob.upload_from_file(output_buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         logger.info(f"Successfully uploaded updated Excel file to GCS: gs://{self.bucket_name}/{blob_path}")
+
+
+    def get_student_reviews(self, lecture_number: int, username: Optional[str] = None) -> pd.DataFrame:
+        """
+        Get review results from Excel file in GCS.
+        """
+        if not self.bucket_name:
+            logger.error("GCS_BUCKET_NAME environment variable not set.")
+            return pd.DataFrame()
+
+        try:
+            bucket = self.gcs_client.bucket(self.bucket_name)
+            blob_path = self.get_excel_blob_path(lecture_number)
+            blob = bucket.blob(blob_path)
+
+            if not blob.exists():
+                logger.warning(f"Excel file not found in GCS: gs://{self.bucket_name}/{blob_path}")
+                return pd.DataFrame()
+
+            file_content = blob.download_as_bytes()
+            df = pd.read_excel(io.BytesIO(file_content), sheet_name='Reviews')
+            
+            if username:
+                df = df[df['Username'] == username]
+
+            return df
+        except Exception as e:
+            logger.error(f"Failed to get student reviews from GCS: {e}")
+            return pd.DataFrame()
