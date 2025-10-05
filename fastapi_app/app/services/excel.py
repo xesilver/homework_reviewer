@@ -7,6 +7,8 @@ from typing import Optional
 
 from google.cloud import storage
 import google.auth
+from google.auth import impersonated_credentials
+from google.auth.transport.requests import Request
 
 from ..core import logger
 from ..core.config import settings
@@ -61,12 +63,10 @@ class ExcelService:
         
         try:
             creds, project = google.auth.default()
-
-            service_account_email = settings.service_account_email
             
-            signer = google.auth.impersonated_credentials.Signer(
+            signer = impersonated_credentials.Signer(
                 source_credentials=creds,
-                target_principal=service_account_email,
+                target_principal=settings.service_account_email,
                 target_scopes=["https://www.googleapis.com/auth/devstorage.read_only"],
                 iam_endpoint="https://iamcredentials.googleapis.com"
             )
@@ -79,11 +79,15 @@ class ExcelService:
                 logger.warning(f"Cannot generate signed URL. File not found: gs://{self.bucket_name}/{blob_path}")
                 return None
 
+            # Refresh the signer to get an access token
+            signer.refresh(Request())
+
             url = blob.generate_signed_url(
                 version="v4",
                 expiration=timedelta(hours=1),
                 method="GET",
-                credentials=signer,
+                service_account_email=settings.service_account_email,
+                access_token=signer.token,
             )
             
             logger.info("Successfully generated signed URL using IAM.")
