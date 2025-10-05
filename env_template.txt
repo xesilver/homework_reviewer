@@ -4,7 +4,7 @@
 
 # -- Google Gemini Configuration --
 GOOGLE_API_KEY=your_google_api_key_here
-GEMINI_MODEL=gemini-pro
+GEMINI_MODEL=gemini-1.5-pro
 
 # -- GitHub Configuration --
 GITHUB_TOKEN=your_github_personal_access_token_here
@@ -12,14 +12,14 @@ GITHUB_TOKEN=your_github_personal_access_token_here
 # -- Local FastAPI Server Settings --
 DEBUG=True
 
-# -- Google Cloud & SendGrid Configuration --
-# The GCP Project ID where your services are located.
+# -- Google Cloud Configuration --
 GCP_PROJECT_ID=your-gcp-project-id
-# The GCS bucket for storing config and results.
 GCS_BUCKET_NAME=your-gcs-bucket-name
-# Your SendGrid API key.
-SENDGRID_API_KEY=your_sendgrid_api_key
-# The email address verified with SendGrid.
-SENDER_EMAIL=your-verified-sender-email@example.com
-# The email address that will receive summary reports.
+
+# -- SMTP Email Configuration --
+SMTP_HOST=your_smtp_host (e.g., smtp.gmail.com)
+SMTP_PORT=587
+SMTP_USER=your_email@example.com
+SMTP_PASSWORD=your_email_app_password
+SENDER_EMAIL=your_email@example.com
 RECIPIENT_EMAIL=your-recipient-email@example.com
