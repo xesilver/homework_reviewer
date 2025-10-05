@@ -9,7 +9,7 @@ from google.cloud import storage
 import google.auth
 from google.auth import impersonated_credentials
 
-from ..core import logger
+from ..core import logger, retry
 from ..core.config import settings
 from ..models.schemas import ReviewResponse
 
@@ -95,6 +95,7 @@ class ExcelService:
             logger.error(f"Failed to generate signed URL with IAM: {e}")
             return None
 
+    @retry()
     def update_student_review(self, lecture_number: int, review_response: ReviewResponse) -> None:
         """
         Update Excel file in GCS with review results for a student.
