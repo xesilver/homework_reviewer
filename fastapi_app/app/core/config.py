@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     sender_email: Optional[str] = Field(default=None, env="SENDER_EMAIL")
     recipient_email: Optional[str] = Field(default=None, env="RECIPIENT_EMAIL")
 
+    # Service Account for Signing URLs
+    service_account_email: Optional[str] = Field(default=None, env="SERVICE_ACCOUNT_EMAIL")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

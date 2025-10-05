@@ -16,6 +16,10 @@ DEBUG=True
 GCP_PROJECT_ID=your-gcp-project-id
 GCS_BUCKET_NAME=your-gcs-bucket-name
 
+# -- Service Account for Signing URLs --
+# The email address of your Cloud Function's service account
+SERVICE_ACCOUNT_EMAIL=your-service-account-email@appspot.gserviceaccount.com
+
 # -- SMTP Email Configuration --
 SMTP_HOST=your_smtp_host (e.g., smtp.gmail.com)
 SMTP_PORT=587
